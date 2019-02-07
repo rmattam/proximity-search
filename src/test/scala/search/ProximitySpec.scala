@@ -36,6 +36,16 @@ class ProximitySpec extends FlatSpec with Matchers {
     index.search("schizophrenia /1 drug", false) should be (result)
   }
 
+  it should "return the proximity intersection for non-directional query 4" in {
+    val result = ArrayBuffer[(String, Int, Int)](
+      ("Doc1",2, 4),
+      ("Doc2",3, 2),
+      ("Doc3",2, 6)
+    )
+
+    index.search("drug /4 schizophrenia") should be (result)
+  }
+
   it should "return the proximity intersection for directional query 1" in {
     val result = ArrayBuffer[(String, Int, Int)](
       ("Doc2",2, 3))
@@ -78,5 +88,14 @@ class ProximitySpec extends FlatSpec with Matchers {
     val result = ArrayBuffer[(String, Int, Int)]()
 
     index.search("drug /1 schizophrenia", true) should be (result)
+  }
+
+  it should "return the proximity intersection for directional query 7" in {
+    val result = ArrayBuffer[(String, Int, Int)](
+      ("Doc1",2, 4),
+      ("Doc3",2, 6)
+    )
+
+    index.search("drug /4 schizophrenia -d") should be (result)
   }
 }

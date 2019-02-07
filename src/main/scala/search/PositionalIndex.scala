@@ -31,7 +31,7 @@ class PositionalIndex {
     }
   }
 
-  def search(input: String, directional: Boolean):ArrayBuffer[(String, Int, Int)] = {
+  def search(input: String, directional:Boolean = false):ArrayBuffer[(String, Int, Int)] = {
 
     def closeEnough(first: Int, second: Int, k: Int, directional: Boolean): Boolean = {
       if (directional && first-second > 0){
@@ -88,6 +88,12 @@ class PositionalIndex {
 
     val query = input.split("[ ]+")
     val tolerance = query(1).stripPrefix("/").toInt
-    return proximity_intersection(query(0), query(2), tolerance, directional)
+
+    var d = directional
+    if (query(query.length - 1) == "-d"){
+      d = true
+    }
+
+    return proximity_intersection(query(0), query(2), tolerance, d)
   }
 }

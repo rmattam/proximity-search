@@ -15,12 +15,18 @@ object Main extends App {
     }
 
     println("Documents have been Indexed Correctly!")
-    println("Enter your search query after the prompt. Type exit/quit to stop")
+
+
+
+    println("Enter your search query after the prompt.\nAdd the -d flag after your query string to enable directional search. egs: term1 /k term2 -d\nType exit/quit to stop")
 
     var query: String = ""
     while (query != "exit" && query != "quit") {
       query = scala.io.StdIn.readLine(">> ")
-      println(index.search(query, false))
+      if (query != "exit" && query != "quit")
+        println(index.search(query))
+      else
+        println("Self Destructing...")
     }
   }
 }
