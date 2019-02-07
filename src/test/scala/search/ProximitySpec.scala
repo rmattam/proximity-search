@@ -12,20 +12,71 @@ class ProximitySpec extends FlatSpec with Matchers {
 
 
 
-  "A Proximity Search Index" should "return the proximity intersection for query 1" in {
+  "A Proximity Search Index" should "return the proximity intersection for non-directional query 1" in {
       val result = ArrayBuffer[(String, Int, Int)](
         ("Doc1",4, 2),
         ("Doc2",2, 3))
 
-     index.search("schizophrenia /2 drug") should be (result)
+     index.search("schizophrenia /2 drug", false) should be (result)
   }
 
-  "A Proximity Search Index" should "return the proximity intersection for query 2" in {
+  it should "return the proximity intersection for non-directional query 2" in {
     val result = ArrayBuffer[(String, Int, Int)](
       ("Doc1",4, 2),
       ("Doc2",2, 3),
       ("Doc3",6, 2))
 
-    index.search("schizophrenia /4 drug") should be (result)
+    index.search("schizophrenia /4 drug", false) should be (result)
+  }
+
+  it should "return the proximity intersection for non-directional query 3" in {
+    val result = ArrayBuffer[(String, Int, Int)](
+      ("Doc2",2, 3))
+
+    index.search("schizophrenia /1 drug", false) should be (result)
+  }
+
+  it should "return the proximity intersection for directional query 1" in {
+    val result = ArrayBuffer[(String, Int, Int)](
+      ("Doc2",2, 3))
+
+    index.search("schizophrenia /2 drug", true) should be (result)
+  }
+
+  it should "return the proximity intersection for directional query 2" in {
+    val result = ArrayBuffer[(String, Int, Int)](
+      ("Doc2",2, 3))
+
+    index.search("schizophrenia /4 drug", true) should be (result)
+  }
+
+  it should "return the proximity intersection for directional query 3" in {
+    val result = ArrayBuffer[(String, Int, Int)](
+      ("Doc1",2, 4),
+      ("Doc3",2, 6)
+    )
+
+    index.search("drug /4 schizophrenia", true) should be (result)
+  }
+
+  it should "return the proximity intersection for directional query 4" in {
+    val result = ArrayBuffer[(String, Int, Int)](
+      ("Doc1",2, 4)
+    )
+
+    index.search("drug /2 schizophrenia", true) should be (result)
+  }
+
+  it should "return the proximity intersection for directional query 5" in {
+    val result = ArrayBuffer[(String, Int, Int)](
+      ("Doc2",2, 3))
+
+    index.search("schizophrenia /1 drug", true) should be (result)
+  }
+
+  it should "return the proximity intersection for directional query 6" in {
+    val result = ArrayBuffer[(String, Int, Int)]()
+
+    index.search("drug /1 schizophrenia", true) should be (result)
   }
 }

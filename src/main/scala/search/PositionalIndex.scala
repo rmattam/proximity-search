@@ -31,13 +31,16 @@ class PositionalIndex {
     }
   }
 
-  def search(input: String):ArrayBuffer[(String, Int, Int)] = {
+  def search(input: String, directional: Boolean):ArrayBuffer[(String, Int, Int)] = {
 
-    def closeEnough(first: Int, second: Int, k: Int): Boolean = {
+    def closeEnough(first: Int, second: Int, k: Int, directional: Boolean): Boolean = {
+      if (directional && first-second > 0){
+        return false
+      }
       return math.abs(first-second) <= k
     }
 
-    def proximity_intersection(term1: String, term2: String, k: Int): ArrayBuffer[(String, Int, Int)] ={
+    def proximity_intersection(term1: String, term2: String, k: Int, directional: Boolean): ArrayBuffer[(String, Int, Int)] ={
       val result = ArrayBuffer[(String, Int, Int)]()
       var i,j = 0
       val p1 = inverted(term1)
@@ -47,16 +50,18 @@ class PositionalIndex {
       while (i < p1.length && j < p2.length){
         if(p1(i)._1 == p2(j)._1){
           //check proximity
-          var l = new ArrayBuffer[Int]()
+          val l = new ArrayBuffer[Int]()
           var pp1, pp2 = 0
           while (pp1 < p1(i)._2.length){
-            while(pp2 < p2(j)._2.length){
-              if (closeEnough(p1(i)._2(pp1), p2(j)._2(pp2), k)){
-                l.append(p2(j)._2(pp2))
-              } else if (p2(j)._2(pp2) > p1(i)._2(pp1)){
-                break
+            breakable {
+              while (pp2 < p2(j)._2.length) {
+                if (closeEnough(p1(i)._2(pp1), p2(j)._2(pp2), k, directional)) {
+                  l.append(p2(j)._2(pp2))
+                } else if (p2(j)._2(pp2) > p1(i)._2(pp1)) {
+                  break
+                }
+                pp2 += 1
               }
-              pp2 += 1
             }
 
             while(l.length != 0 && math.abs(l(0)-p1(i)._2(pp1)) > k){
@@ -83,6 +88,6 @@ class PositionalIndex {
 
     val query = input.split("[ ]+")
     val tolerance = query(1).stripPrefix("/").toInt
-    return proximity_intersection(query(0), query(2), tolerance)
+    return proximity_intersection(query(0), query(2), tolerance, directional)
   }
 }
